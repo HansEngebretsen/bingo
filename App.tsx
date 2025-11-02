@@ -1,6 +1,9 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import type { BingoGrid, Cell } from './types';
-import { HALLOWEEN_TERMS } from './constants';
+// Fix: Add missing import for React.
+import React from 'react';
+import type { BingoGrid, Cell } from './types.ts';
+import { HALLOWEEN_TERMS } from './constants.ts';
+
+const { useState, useEffect, useCallback, useRef } = React;
 
 interface JargonTerm {
     text: string;

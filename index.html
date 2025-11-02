@@ -298,6 +298,11 @@
             animation: modal-drop-out 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
     </style>
+    <!-- Add UMD builds for React and ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <!-- Add Babel for in-browser JSX/TSX transformation -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <script type="importmap">
 {
   "imports": {
@@ -311,6 +316,6 @@
 <body class="p-4 sm:p-6 md:p-8">
     <div id="svg-container" style="display: none;"></div>
     <div id="root"></div>
-    <script type="module" src="./index.tsx"></script>
+    <script type="text/babel" src="./index.tsx"></script>
 </body>
 </html>
