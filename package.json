@@ -1,9 +1,9 @@
 {
-  "name": "spooky-bingo",
+  "name": "bingo",
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://<your-github-username>.github.io/spooky-bingo",
+  "homepage": "https://HansEngebretsen.github.io/bingo",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
@@ -19,7 +19,7 @@
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
     "@vitejs/plugin-react": "^4.0.3",
-    "gh-pages": "^6.1.1",
+    "gh-pages": "^6.3.0",
     "typescript": "^5.0.2",
     "vite": "^4.4.5"
   }
