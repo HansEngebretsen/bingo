@@ -17,8 +17,8 @@ function mountApp() {
 }
 
 // Fetch and inject SVG symbols, then mount the React app.
-// Using an absolute path '/symbols.svg' consistent with how '/index.tsx' is loaded.
-fetch('/symbols.svg')
+// Using a relative path 'symbols.svg' for better deployment flexibility.
+fetch('symbols.svg')
   .then(response => {
     if (!response.ok) {
       // Log more details on failure

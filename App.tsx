@@ -243,6 +243,7 @@ const BingoGame: React.FC<{ onSwitchToAdmin: () => void; isDarkMode: boolean; to
     const [cardDisplayMode, setCardDisplayMode] = useState<CardDisplayMode>('both');
     const [showBingoModal, setShowBingoModal] = useState(false);
     const [isDismissingModal, setIsDismissingModal] = useState(false);
+    const [isResetting, setIsResetting] = useState(false);
 
 
     const tagInputRef = useRef<HTMLInputElement>(null);
@@ -269,6 +270,7 @@ const BingoGame: React.FC<{ onSwitchToAdmin: () => void; isDarkMode: boolean; to
     const createCard = useCallback(() => {
         if (masterJargonList.length < 24) {
              setGridState(null);
+             setIsResetting(false);
              return;
         }
 
@@ -310,22 +312,32 @@ const BingoGame: React.FC<{ onSwitchToAdmin: () => void; isDarkMode: boolean; to
         setBlackoutOpacity(false);
         setEasterEggActive(false);
         setBingoPulseActive(false);
+        setIsResetting(false);
 
     }, [masterJargonList]);
     
     const resetGame = useCallback(() => {
+        setIsResetting(true);
         if (gridStateRef.current?.interacted) {
             setStats(s => ({ ...s, gamesPlayed: s.gamesPlayed + 1, cardsCreated: s.cardsCreated + 1 }));
         } else {
             setStats(s => ({ ...s, cardsCreated: s.cardsCreated + 1 }));
         }
-        createCard();
-    }, [createCard]);
+    }, []);
 
 
     useEffect(() => {
-        createCard();
-    }, [createCard]);
+        if (isResetting) {
+            createCard();
+        }
+    }, [isResetting, createCard]);
+
+
+    useEffect(() => {
+        if (!gridState) {
+            createCard();
+        }
+    }, [createCard, gridState]);
 
 
     const handleCellClick = (r: number, c: number) => {
@@ -368,7 +380,7 @@ const BingoGame: React.FC<{ onSwitchToAdmin: () => void; isDarkMode: boolean; to
     }, [resetGame]);
 
     useEffect(() => {
-        if (grid.length === 0 || !gridState) return;
+        if (grid.length === 0 || !gridState || isResetting) return;
 
         const allChecked = grid.every(row => row.every(cell => cell.checked));
         if (allChecked && !showBlackout) {
@@ -428,7 +440,7 @@ const BingoGame: React.FC<{ onSwitchToAdmin: () => void; isDarkMode: boolean; to
                  setGridState(prevState => prevState ? ({ ...prevState, grid: updatedGrid }) : null);
             }
         }
-    }, [grid, showBlackout, bingoWonOnCard, gridState, isDismissingModal]);
+    }, [grid, showBlackout, bingoWonOnCard, gridState, isDismissingModal, isResetting]);
 
     const handleDeleteTerm = (termToDelete: string) => {
         setMasterJargonList(prev => prev.filter(jargon => jargon.text !== termToDelete));
