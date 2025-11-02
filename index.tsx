@@ -18,8 +18,8 @@ function mountApp() {
 //test
 
 // Fetch and inject SVG symbols, then mount the React app.
-// Using an absolute path '/symbols.svg' to fetch from the public directory.
-fetch('/symbols.svg')
+// Using a relative path 'symbols.svg' to fetch from the public directory.
+fetch('symbols.svg')
   .then(response => {
     if (!response.ok) {
       // Log more details on failure
