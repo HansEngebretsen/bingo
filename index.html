@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full halloween-mode">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta name="theme-color" content="#FCF7E6">
+    <title>Spooky Bingo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Configure Tailwind to use the 'class' strategy for dark mode
+        tailwind.config = {
+          darkMode: 'class',
+          theme: {
+            extend: {
+              fontFamily: {
+                'pixel': ['VT323', 'monospace'],
+                'sans': ['Work Sans', 'sans-serif'],
+              },
+            },
+          },
+        }
+    </script>
+    
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=VT323&amp;family=Work+Sans:wght@400;700&amp;display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Work Sans', 'sans-serif';
+            background-color: #ffffff;
+            color: #000000;
+            overflow-x: hidden; /* Prevent horizontal scrollbar */
+        }
+        .font-pixel {
+            font-family: 'VT323', monospace;
+        }
+        .bingo-card-cell {
+            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, transform 0.2s ease, box-shadow 0.3s ease;
+        }
+        .bingo-card-cell.is-checked {
+            transform: scale(0.95);
+        }
+
+        .bingo-win {
+            animation: bingo-glow 1.5s ease-in-out 2; /* Pulse stops after 2 iterations */
+        }
+        @keyframes bingo-glow {
+            0%, 100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0px rgba(255, 165, 0, 0), inset 0 0 0px rgba(255, 165, 0, 0);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 0 15px 5px rgba(255, 165, 0, 0.7), inset 0 0 10px 2px rgba(255, 100, 0, 0.5);
+            }
+        }
+        
+        /* Easter Egg Animations */
+        @keyframes easter-egg-animation {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-1deg); } /* Removed invert filter */
+            50% { transform: rotate(0deg); }
+            75% { transform: rotate(1deg); } /* Removed invert filter */
+        }
+        .bingo-easter-egg {
+            animation: easter-egg-animation 1.5s ease-in-out;
+        }
+        
+        /* Collapsible Section Styles */
+        details > summary { list-style: none; }
+        details > summary::-webkit-details-marker { display: none; }
+        details > summary::after { content: '+'; margin-left: auto; }
+        details[open] > summary::after { content: '−'; }
+
+
+        /* Custom selection styles */
+        ::selection {
+            background-color: #333;
+            color: white;
+        }
+        .dark ::selection {
+            background-color: white;
+            color: #111;
+        }
+        .text-base {
+          line-height:1;
+        }
+        .bingobttn {
+          line-height:1 !important; 
+          padding-top:0;
+        }
+        .grey-text {
+          color: grey;
+        }
+
+        /* --- HALLOWEEN MODE --- */
+        /* Define requested colors */
+        html.halloween-mode {
+            --hw-bg-main: #FCF7E6; /* Requested Light Mode BG */
+            --hw-bg-sec: #E7E4C8;  /* Requested Light Mode Secondary */
+            --hw-text: #4A3C6A;    /* Dark Purple for contrast text in light mode */
+            --hw-highlight: #b2a8c9;
+            --hw-highlight-text: #110e19;
+        }
+        html.halloween-mode.dark {
+            --hw-bg-main: #4A3C6A; /* Requested Dark Mode BG */
+            --hw-bg-sec: #3D3556;  /* Requested Dark Mode Secondary */
+            --hw-text: #FCF7E6;    /* Light Cream for contrast text in dark mode */
+            --hw-highlight: #b2a8c9;
+            --hw-highlight-text: #110e19;
+        }
+
+        /* Apply overrides strictly when halloween-mode class is present */
+        html.halloween-mode body { background-color: var(--hw-bg-main) !important; color: var(--hw-text) !important; }
+        html.halloween-mode .bg-white { background-color: var(--hw-bg-main) !important; }
+        html.halloween-mode .bg-gray-50, 
+        html.halloween-mode .bg-gray-100,
+        html.halloween-mode .bg-gray-200 { background-color: var(--hw-bg-sec) !important; }
+        html.halloween-mode .border-gray-300 { border-color: var(--hw-bg-sec) !important; }
+        
+        /* Dark mode halloween overrides */
+        html.halloween-mode.dark .dark\:bg-gray-900, 
+        html.halloween-mode.dark .dark\:bg-gray-800 { background-color: var(--hw-bg-sec) !important; }
+        html.halloween-mode.dark .dark\:border-gray-700 { border-color: var(--hw-bg-sec) !important; }
+        html.halloween-mode.dark .dark\:text-white { color: var(--hw-text) !important; }
+        html.halloween-mode.dark .dark\:text-gray-300,
+        html.halloween-mode.dark .dark\:text-gray-400 { color: var(--hw-text) !important; opacity: 0.8; }
+
+        /* General color overrides to remove black/white */
+        html.halloween-mode .bg-black { background-color: var(--hw-text) !important; }
+        html.halloween-mode .text-white { color: var(--hw-bg-main) !important; }
+        html.halloween-mode.dark .dark\:bg-white { background-color: var(--hw-highlight) !important; }
+        html.halloween-mode.dark .dark\:text-black { color: var(--hw-highlight-text) !important; }
+        html.halloween-mode.dark .dark\:bg-black { background-color: var(--hw-bg-main) !important; }
+
+        /* Ensure text contrast and specifics */
+        html.halloween-mode .text-black { color: var(--hw-text) !important; }
+        
+        /* Bingo cell specifics for Halloween */
+        html.halloween-mode .bingo-card-cell { border-color: var(--hw-bg-sec) !important; }
+        /* Checked state: invert the halloween colors */
+        html.halloween-mode .bingo-card-cell.is-checked {
+            background-color: var(--hw-text) !important;
+            color: var(--hw-bg-main) !important;
+            border-color: var(--hw-text) !important;
+        }
+        html.halloween-mode.dark .bingo-card-cell.is-checked {
+             background-color: var(--hw-highlight) !important;
+            color: var(--hw-highlight-text) !important;
+            border-color: var(--hw-highlight) !important;
+        }
+
+        /* --- SPIDER ANIMATION --- */
+        html.halloween-mode .spider-svg-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 200px;
+            height: 100vh;
+            z-index: 0; /* Behind main content if possible */
+            pointer-events: none;
+        }
+        @keyframes move-spider {
+            0% { transform: translate(60px, 45px); }
+            30% { transform: translate(60px, 450px); }
+            100% { transform: translate(60px, 45px); }
+        }
+        html.halloween-mode .web {
+            fill: none;
+            stroke: var(--hw-bg-sec);
+            stroke-width: 0.5;
+        }
+        html.halloween-mode .spider-body {
+            fill: var(--hw-bg-sec);
+        }
+        html.halloween-mode .spider-legs,
+        html.halloween-mode .spider-internal-thread {
+            stroke: var(--hw-bg-sec);
+            stroke-width: 0.5;
+            fill: none;
+        }
+        html.halloween-mode #spider-group {
+            animation: move-spider 15s ease-in-out infinite;
+        }
+
+        /* Multi-toggle styles */
+        .multi-toggle-container {
+            position: relative;
+            display: flex;
+            background-color: var(--hw-bg-sec);
+            border-radius: 99px;
+            padding: 4px;
+        }
+        .multi-toggle-btn {
+            flex: 1;
+            padding: 4px 12px;
+            font-size: 12px;
+            font-family: 'VT323', monospace;
+            text-transform: uppercase;
+            background-color: transparent;
+            border: none;
+            color: var(--hw-text);
+            cursor: pointer;
+            z-index: 1;
+            transition: color 0.3s ease-in-out;
+        }
+        .multi-toggle-btn.active {
+            color: var(--hw-bg-main);
+        }
+        .dark .multi-toggle-btn.active {
+            color: #110e19;
+        }
+
+        .multi-toggle-thumb {
+            position: absolute;
+            top: 4px;
+            bottom: 4px;
+            left: 4px;
+            width: calc((100% - 8px) / 3);
+            background-color: var(--hw-text);
+            border-radius: 99px;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .dark .multi-toggle-thumb {
+            background-color: #b2a8c9;
+        }
+
+        /* Card display mode styles */
+        .bingo-card-cell.text-only span {
+            font-size: 1rem;
+            line-height: 1.1;
+            padding: 4px;
+        }
+
+        /* SVG sizing rules */
+        /* Default for 'both' mode */
+        .bingo-card-cell svg {
+             width: 2.5rem; /* w-8 */
+             height: 2.5rem;
+        }
+        /* Override for 'icon-only' mode */
+        .bingo-card-cell.icon-only svg {
+             width: 3rem; /* w-12 */
+             height: 3em;
+        }
+
+         @media (min-width: 640px) { /* sm breakpoint */
+            .bingo-card-cell.text-only span {
+                font-size: 1.25rem;
+            }
+            /* Default for 'both' mode */
+            .bingo-card-cell svg {
+                width: 4rem; /* sm:w-12 */
+                height: 4rem;
+            }
+            /* Override for 'icon-only' mode */
+            .bingo-card-cell.icon-only svg {
+                width: 5rem; /* sm:w-16 */
+                height: 5rem;
+            }
+        }
+
+        /* New Animations */
+        @keyframes float-icon {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            25% { transform: translateY(-10px) rotate(-3deg); }
+            75% { transform: translateY(10px) rotate(3deg); }
+        }
+        .animate-float {
+            animation: float-icon 8s ease-in-out infinite;
+        }
+        
+        @keyframes modal-drop-in {
+            from {
+                opacity: 0;
+                transform: translateY(-100vh) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        @keyframes modal-drop-out {
+            from {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(100vh) scale(0.9);
+            }
+        }
+        .animate-modal-drop-in {
+            animation: modal-drop-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        .animate-modal-drop-out {
+            animation: modal-drop-out 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        
+        @keyframes countdown-animation {
+            from { width: 100%; }
+            to { width: 0%; }
+        }
+        .countdown-progress {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.3);
+            animation: countdown-animation 8s linear forwards;
+        }
+        .dark .countdown-progress {
+             background-color: rgba(0, 0, 0, 0.3);
+        }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0"
+  }
+}
+</script>
+</head>
+<body class="p-4 sm:p-6 md:p-8">
+    <div id="svg-container" style="display: none;"></div>
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+</body>
+</html>

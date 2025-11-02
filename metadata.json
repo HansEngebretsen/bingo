@@ -1,0 +1,5 @@
+{
+  "name": "Spooky Bingo",
+  "description": "A Halloween-themed bingo game where you track spooky terms. Manage your own list of terms, aim for a bingo, and try not to get trapped in the eternal void. Features a dark mode and spooky animations.",
+  "requestFramePermissions": []
+}
