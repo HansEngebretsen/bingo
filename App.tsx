@@ -243,6 +243,9 @@ const BingoGame: React.FC<{ onSwitchToAdmin: () => void; isDarkMode: boolean; to
     const [cardDisplayMode, setCardDisplayMode] = useState<CardDisplayMode>('both');
     const [showBingoModal, setShowBingoModal] = useState(false);
     const [isDismissingModal, setIsDismissingModal] = useState(false);
+    
+    // This flag is crucial to prevent a race condition where clicking "New Game"
+    // on a winning board could re-trigger the BINGO modal.
     const [isResetting, setIsResetting] = useState(false);
 
 
@@ -270,7 +273,7 @@ const BingoGame: React.FC<{ onSwitchToAdmin: () => void; isDarkMode: boolean; to
     const createCard = useCallback(() => {
         if (masterJargonList.length < 24) {
              setGridState(null);
-             setIsResetting(false);
+             setIsResetting(false); // Ensure flag is cleared even if card isn't created
              return;
         }
 
@@ -312,12 +315,13 @@ const BingoGame: React.FC<{ onSwitchToAdmin: () => void; isDarkMode: boolean; to
         setBlackoutOpacity(false);
         setEasterEggActive(false);
         setBingoPulseActive(false);
-        setIsResetting(false);
+        setIsResetting(false); // Unset the flag after the new card is ready
 
     }, [masterJargonList]);
     
+    // This function starts the reset process by setting the `isResetting` flag.
     const resetGame = useCallback(() => {
-        setIsResetting(true);
+        setIsResetting(true); // Activate the guard flag
         if (gridStateRef.current?.interacted) {
             setStats(s => ({ ...s, gamesPlayed: s.gamesPlayed + 1, cardsCreated: s.cardsCreated + 1 }));
         } else {
@@ -326,6 +330,7 @@ const BingoGame: React.FC<{ onSwitchToAdmin: () => void; isDarkMode: boolean; to
     }, []);
 
 
+    // This effect listens for the `isResetting` flag and calls createCard when it's true.
     useEffect(() => {
         if (isResetting) {
             createCard();
@@ -380,7 +385,9 @@ const BingoGame: React.FC<{ onSwitchToAdmin: () => void; isDarkMode: boolean; to
     }, [resetGame]);
 
     useEffect(() => {
-        if (grid.length === 0 || !gridState || isResetting) return;
+        // The `isResetting` guard is essential here. It prevents this effect from running
+        // on a stale (winning) grid during the process of creating a new game.
+        if (grid.length === 0 || !gridState || isResetting || isDismissingModal) return;
 
         const allChecked = grid.every(row => row.every(cell => cell.checked));
         if (allChecked && !showBlackout) {
@@ -424,19 +431,18 @@ const BingoGame: React.FC<{ onSwitchToAdmin: () => void; isDarkMode: boolean; to
                 }))
             );
 
-            if (!bingoWonOnCard) { 
-                if (!isDismissingModal) { 
-                    setStats(s => ({...s, gamesWon: s.gamesWon + 1, gamesPlayed: s.gamesPlayed + 1}));
-                    setGridState(prevState => prevState ? ({ ...prevState, grid: updatedGrid, bingoWon: true, interacted: false }) : null);
-                    
-                    setEasterEggActive(true);
-                    setBingoPulseActive(true);
-                    setShowBingoModal(true); 
-                    
-                    setTimeout(() => setEasterEggActive(false), 1500);
-                    setTimeout(() => setBingoPulseActive(false), 3000);
-                }
+            if (!bingoWonOnCard) { // Only trigger the "You Won!" sequence once per card
+                setStats(s => ({...s, gamesWon: s.gamesWon + 1, gamesPlayed: s.gamesPlayed + 1}));
+                setGridState(prevState => prevState ? ({ ...prevState, grid: updatedGrid, bingoWon: true, interacted: false }) : null);
+                
+                setEasterEggActive(true);
+                setBingoPulseActive(true);
+                setShowBingoModal(true); 
+                
+                setTimeout(() => setEasterEggActive(false), 1500);
+                setTimeout(() => setBingoPulseActive(false), 3000);
             } else {
+                 // If bingo is already won, just update the grid to highlight new winning lines
                  setGridState(prevState => prevState ? ({ ...prevState, grid: updatedGrid }) : null);
             }
         }
@@ -687,7 +693,7 @@ const BingoGame: React.FC<{ onSwitchToAdmin: () => void; isDarkMode: boolean; to
         </>
     );
 }
-
+//test
 // --- Main App Router ---
 function App() {
     const [view, setView] = useState<'game' | 'admin'>('game');
