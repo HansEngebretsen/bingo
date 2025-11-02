@@ -243,12 +243,10 @@ const BingoGame: React.FC<{ onSwitchToAdmin: () => void; isDarkMode: boolean; to
     const [cardDisplayMode, setCardDisplayMode] = useState<CardDisplayMode>('both');
     const [showBingoModal, setShowBingoModal] = useState(false);
     const [isDismissingModal, setIsDismissingModal] = useState(false);
-    const [isRequestingNewGame, setIsRequestingNewGame] = useState(false);
 
 
     const tagInputRef = useRef<HTMLInputElement>(null);
     const [tagInput, setTagInput] = useState('');
-    const modalTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     
     useEffect(() => {
         setStoredJargonList(masterJargonList);
@@ -347,61 +345,27 @@ const BingoGame: React.FC<{ onSwitchToAdmin: () => void; isDarkMode: boolean; to
     const clearStats = () => {
         setStats({ gamesPlayed: 0, gamesWon: 0, cardsCreated: 0 });
     };
-    
-    const handleModalAction = useCallback((isNewGame: boolean) => {
-        if (modalTimeoutRef.current) {
-            clearTimeout(modalTimeoutRef.current);
-            modalTimeoutRef.current = null;
-        }
-        setIsDismissingModal(true); // Always start dismissal
-        if (isNewGame) {
-            setIsRequestingNewGame(true); // Flag that a new game is wanted
-        }
+
+    const handleCloseModal = useCallback(() => {
+        setIsDismissingModal(true); // Start animation and block bingo checks
+
+        // After animation, reset state
+        setTimeout(() => {
+            setShowBingoModal(false);
+            setIsDismissingModal(false);
+        }, 500); // Corresponds to 'animate-modal-drop-out' duration
     }, []);
 
-    // This single new effect reliably handles the modal dismissal and new game sequence.
-    useEffect(() => {
-        // Only run this logic when a dismissal has been initiated.
-        if (!isDismissingModal) {
-            return;
-        }
+    const handleNewGameFromModal = useCallback(() => {
+        setIsDismissingModal(true); // Start animation and block bingo checks
 
-        // Set a timer that matches the modal's exit animation duration.
-        const animationTimer = setTimeout(() => {
-            // 1. After the animation, remove the modal from the DOM.
+        // After animation, reset game and state
+        setTimeout(() => {
             setShowBingoModal(false);
-
-            // 2. If a new game was requested (by clicking or timeout), reset the board.
-            if (isRequestingNewGame) {
-                resetGame();
-            }
-
-            // 3. Reset the state flags to complete the transition.
-            // This happens *after* the new game is created, preventing a race condition.
-            setIsRequestingNewGame(false);
-            setIsDismissingModal(false);
-
-        }, 500); // Corresponds to 'animate-modal-drop-out' duration.
-
-        // Cleanup function to prevent memory leaks if the component unmounts.
-        return () => clearTimeout(animationTimer);
-
-    }, [isDismissingModal, isRequestingNewGame, resetGame]);
-
-
-    useEffect(() => {
-        if (showBingoModal) {
-            modalTimeoutRef.current = setTimeout(() => {
-                handleModalAction(true); // Auto-select "New Game"
-            }, 8000); // 8 seconds
-        }
-        return () => {
-            if (modalTimeoutRef.current) {
-                clearTimeout(modalTimeoutRef.current);
-            }
-        };
-    }, [showBingoModal, handleModalAction]);
-
+            resetGame();
+            setIsDismissingModal(false); // Reset this last
+        }, 500); // Corresponds to 'animate-modal-drop-out' duration
+    }, [resetGame]);
 
     useEffect(() => {
         if (grid.length === 0 || !gridState) return;
@@ -528,9 +492,9 @@ const BingoGame: React.FC<{ onSwitchToAdmin: () => void; isDarkMode: boolean; to
             </div>
 
              {showBingoModal && (
-                <div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50 flex justify-center items-center" onClick={() => handleModalAction(false)}>
+                <div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50 flex justify-center items-center" onClick={handleCloseModal}>
                     <div className={`relative bg-white dark:bg-black p-8 rounded-lg shadow-2xl border-4 border-current text-center flex flex-col items-center gap-4 ${isDismissingModal ? 'animate-modal-drop-out' : 'animate-modal-drop-in'}`} onClick={(e) => e.stopPropagation()}>
-                        <button onClick={() => handleModalAction(false)} className="absolute top-2 right-2 text-current hover:opacity-75">
+                        <button onClick={handleCloseModal} className="absolute top-2 right-2 text-current hover:opacity-75">
                              <span className="material-symbols-outlined text-3xl">close</span>
                         </button>
                         <svg className="w-24 h-24 text-[#4A3C6A] dark:text-[#FCF7E6]" viewBox="0 0 24 24" fill="currentColor">
@@ -542,14 +506,13 @@ const BingoGame: React.FC<{ onSwitchToAdmin: () => void; isDarkMode: boolean; to
                         <p className="font-pixel text-lg dark:text-gray-300">You've summoned a win!</p>
                         <div className="flex justify-center gap-4 mt-4">
                              <button
-                                onClick={() => handleModalAction(true)}
+                                onClick={handleNewGameFromModal}
                                 className="relative overflow-hidden bg-black text-white dark:bg-white dark:text-black font-pixel text-lg py-2 px-6 hover:opacity-90 transition-opacity"
                             >
                                 <span className="relative z-10">New Game</span>
-                                {!isDismissingModal && <span className="countdown-progress"></span>}
                             </button>
                              <button
-                                onClick={() => handleModalAction(false)}
+                                onClick={handleCloseModal}
                                 className="bg-gray-200 dark:bg-gray-800 font-pixel text-lg py-2 px-6 hover:opacity-90 transition-opacity"
                             >
                                 Keep Playing
