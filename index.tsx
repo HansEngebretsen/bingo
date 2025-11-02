@@ -15,6 +15,7 @@ function mountApp() {
     </React.StrictMode>
   );
 }
+//test
 
 // Fetch and inject SVG symbols, then mount the React app.
 // Using a relative path 'symbols.svg' for better deployment flexibility.
