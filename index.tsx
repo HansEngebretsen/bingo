@@ -1,10 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createHashRouter, RouterProvider } from 'react-router-dom';
 import App from './App.tsx';
 import Admin from './Admin.tsx';
 
-const router = createBrowserRouter([
+const router = createHashRouter([
   {
     path: '/',
     element: <App />,
@@ -13,9 +13,7 @@ const router = createBrowserRouter([
     path: 'admin',
     element: <Admin />,
   },
-], {
-  basename: '/bingo',
-});
+]);
 
 function mountApp() {
   const rootElement = document.getElementById('root');
