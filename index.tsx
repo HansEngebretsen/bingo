@@ -1,23 +1,19 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { createHashRouter, RouterProvider } from 'react-router-dom';
 import App from './App.tsx';
 import Admin from './Admin.tsx';
 
-function getPageFromQueryParam() {
-  const params = new URLSearchParams(window.location.search);
-  return params.get('page');
-}
-
-function RootComponent() {
-  const page = getPageFromQueryParam();
-
-  switch (page) {
-    case 'admin':
-      return <Admin />;
-    default:
-      return <App />;
-  }
-}
+const router = createHashRouter([
+  {
+    path: '/',
+    element: <App />,
+  },
+  {
+    path: 'admin',
+    element: <Admin />,
+  },
+]);
 
 function mountApp() {
   const rootElement = document.getElementById('root');
@@ -28,7 +24,7 @@ function mountApp() {
   const root = ReactDOM.createRoot(rootElement);
   root.render(
     <React.StrictMode>
-      <RootComponent />
+      <RouterProvider router={router} />
     </React.StrictMode>
   );
 }
