@@ -1,7 +1,5 @@
 # 🎃 Spooky Bingo 👻
 
-Welcome to Spooky Bingo, a fun, interactive bingo game with a delightful Halloween theme!
-
 ## About
 Simple bingo game haloween themed, mostly for kids - with options for icons, text or both
 
