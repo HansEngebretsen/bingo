@@ -1,6 +1,21 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import App from './App.tsx';
+import Admin from './Admin.tsx';
+
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <App />,
+  },
+  {
+    path: 'admin',
+    element: <Admin />,
+  },
+], {
+  basename: '/bingo',
+});
 
 function mountApp() {
   const rootElement = document.getElementById('root');
@@ -11,14 +26,12 @@ function mountApp() {
   const root = ReactDOM.createRoot(rootElement);
   root.render(
     <React.StrictMode>
-      <App />
+      <RouterProvider router={router} />
     </React.StrictMode>
   );
 }
-//test
 
 // Fetch and inject SVG symbols, then mount the React app.
-// Using a relative path './symbols.svg' to fetch from the public directory.
 fetch('./symbols.svg')
   .then(response => {
     if (!response.ok) {
