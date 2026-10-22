@@ -1,9 +1,12 @@
 // Fix: Add missing import for React.
 import React from 'react';
+import { Routes, Route, Link } from 'react-router-dom';
 import type { BingoGrid, Cell } from './types.ts';
 import { HALLOWEEN_TERMS } from './constants.ts';
+import { GHOST_HOOD_PATH, GHOST_FACE_PATH } from './ghostMask.ts';
+import { Celebration } from './Celebration.tsx';
 
-const { useState, useEffect, useCallback, useRef } = React;
+const { useState, useEffect, useLayoutEffect, useCallback, useRef } = React;
 
 interface JargonTerm {
     text: string;
@@ -24,6 +27,20 @@ interface GridState {
 }
 
 type CardDisplayMode = 'both' | 'icon' | 'text';
+
+// Let JSX accept the shared <hans-footer> web component.
+declare global {
+    namespace JSX {
+        interface IntrinsicElements {
+            'hans-footer': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
+                'text-color'?: string;
+                'github-url'?: string;
+                logo?: string;
+                padding?: string;
+            };
+        }
+    }
+}
 
 // --- LocalStorage Keys ---
 const JARGON_LIST_KEY = 'spookyBingoJargonList';
@@ -99,7 +116,7 @@ const shuffle = <T,>(array: T[]): T[] => {
 
 
 // --- Admin View Component ---
-const AdminView: React.FC<{ onSwitchToGame: () => void; isDarkMode: boolean; toggleDarkMode: () => void; }> = ({ onSwitchToGame, isDarkMode, toggleDarkMode }) => {
+const AdminView: React.FC<{ isDarkMode: boolean; toggleDarkMode: () => void; }> = ({ isDarkMode, toggleDarkMode }) => {
     const [allTerms] = useState<JargonTerm[]>(getStoredJargonList());
     const [shuffledTerms, setShuffledTerms] = useState<JargonTerm[]>([]);
     const [calledTerms, setCalledTerms] = useState<JargonTerm[]>([]);
@@ -145,9 +162,9 @@ const AdminView: React.FC<{ onSwitchToGame: () => void; isDarkMode: boolean; tog
                     <p className="font-pixel text-lg dark:text-gray-300 grey-text">Admin Mode</p>
                 </div>
                 <div className="flex items-center gap-4">
-                    <button onClick={onSwitchToGame} className="font-pixel text-lg hover:underline transition-colors bg-transparent border-none p-0 cursor-pointer">Back to Game</button>
+                    <Link to="/" className="font-pixel text-lg hover:underline transition-colors bg-transparent border-none p-0 cursor-pointer">Back to Game</Link>
                     <button id="dark-mode-toggle-admin" onClick={toggleDarkMode} className="flex-shrink-0 relative flex items-center gap-2 p-1 rounded-full transition-all group hover:bg-transparent border-0" title={isDarkMode ? "Turn off dark mode" : "Turn on dark mode"}>
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 831.0055 1184.8492" className="w-10 h-10" fill="none"><g><path id="Hood" className="fill-current text-[#4A3C6A] dark:text-[#FCF7E6]" d="M831.0012,1184.8492H0v-283.7726c15.6078-7.0452,33.8768-11.6022,48.9861-19.4394,31.6518-16.4179,11.8888-32.5721,2.0949-55.1432-26.799-61.7611-2.5334-156.0111,11.3307-220.1945,22.1168-102.3891,47.1297-204.6843,70.9148-306.7542C167.8884,151.228,227.0403,49.8861,381.0222,4.7749c46.4767-13.616,91.5096,4.2277,133.7178,24.1419,113.8958,53.7372,144.8012,134.2534,178.6952,248.8906,34.5876,116.9834,60.8748,245.4045,85.32,365.2847,11.5277,56.5322,29.2336,124.5664,7.0631,180.3094-5.0991,12.8206-18.3496,29.1343-15.515,42.9737,3.2361,15.8,47.7024,25.6877,60.2081,33.6927l.4943,1.5039-.0043,283.2773Z" /><path id="Face" className="transition-colors fill-[#FCF7E6] dark:fill-[#4A3C6A] group-hover:fill-[#4A3C6A] dark:group-hover:fill-[#FCF7E6]" d="M408.8714,127.3719c53.6921-4.6757,113.6913,41.8753,147.5371,79.6223,69.0189,76.9745,104.3967,206.0727,115.3377,307.2775,1.6423,15.1916,5.3483,39.4317-.8071,53.1302-8.6138,19.1692-29.4733,15.1333-39.572,29.3569-5.6243,7.9216-8.0265,22.1695-10.2416,31.7206-8.2435,35.5436-12.5874,73.193-22.7836,108.1024-19.6543,67.2918-71.6133,116.236-90.1051,183.6395-12.5929,45.9017-7.4029,103.6013-28.0715,144.7788-27.1583,54.1066-96.7072,58.2855-129.8323,7.6238-33.8207-51.7256-22.1948-121.1712-37.6466-179.1646-5.2215-19.5973-12.8523-39.2265-21.2973-57.6309-25.762-56.1436-60.0784-84.665-72.7952-149.9971-6.2249-31.9801-5.5425-79.6091-16.7877-108.1055-8.221-20.8327-35.7593-17.596-43.4828-40.4325-4.0994-12.1208.3774-36.5123,2.189-49.8675,14.5121-106.9852,55.0984-226.8911,135.6809-301.9141,28.9998-26.9991,72.3286-54.6259,112.6782-58.1397ZM345.8879,261.2047c-22.666,3.5666-36.9147,41.9936-48.2668,59.6282-10.2589,15.9365-23.4606,29.8323-37.8956,42.0252-28.9605,24.4622-73.723,42.7852-63.1008,89.156,7.9357,34.6429,44.3304,38.6057,73.4001,29.061,39.0977-12.8374,82.6479-63.7014,99.2709-100.5292,13.7041-30.3609,37.3379-128.8996-23.4078-119.3411ZM477.7289,266.201c-33.1222,5.1296-27.344,64.296-23.4197,87.8974,10.7093,64.4065,67.61,160.6037,145.5224,139.17,47.5446-13.0795,36.2882-52.2666,9.5133-80.4391-29.9642-31.5282-55.1221-44.387-74.5978-87.2426-12.5858-27.6944-16.4843-65.6632-57.0181-59.3858ZM405.9326,471.9409c-1.4005-.8748-5.7922-.0063-7.5713.6343-10.3547,3.728-40.1955,46.5664-41.9868,57.9146-4.7789,30.2753,26.0385,24.3638,40.7336,10.773,11.6695-10.7926,11.1245-48.5998,10.0109-64.0144-.0844-1.1687-.4602-4.8538-1.1863-5.3074ZM463.6684,549.3962c3.7532-3.5865,3.8965-10.1799,3.2476-15.0662-1.5658-11.7904-28.6769-47.952-37.8396-57.0672-5.4965-5.4681-13.8657-10.2831-15.0083,1.0309-1.3873,13.7368-.8805,45.1363,5.9639,56.9779,6.675,11.5483,32.6769,24.5973,43.6364,14.1247ZM411.8612,625.9689c-25.9706.5415-51.0975,9.8326-67.1315,30.7601-41.1885,53.7589-6.4194,157.8952.4089,220.2522,5.8915,53.8017-1.2493,125.0571,24.8111,173.0204,19.0667,35.0916,58.6872,39.4135,79.2451,3.0006,16.0861-28.4922,13.2534-70.8439,16.8134-103.0838,8.5986-77.8712,45.0313-155.4992,36.9442-234.8108-5.4719-53.6637-33.8777-90.3316-91.0912-89.1386Z" /></g></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 831.0055 1184.8492" className="w-10 h-10" fill="none"><g><path id="Hood" className="fill-current text-[#4A3C6A] dark:text-[#FCF7E6]" d={GHOST_HOOD_PATH} /><path id="Face" className="transition-colors fill-[#FCF7E6] dark:fill-[#4A3C6A] group-hover:fill-[#4A3C6A] dark:group-hover:fill-[#FCF7E6]" d={GHOST_FACE_PATH} /></g></svg>
                         {isDarkMode && (<span className={`absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-[10px] font-bold leading-none transition-opacity opacity-0 group-hover:opacity-100`}>X</span>)}
                     </button>
                 </div>
@@ -216,7 +233,7 @@ const AdminView: React.FC<{ onSwitchToGame: () => void; isDarkMode: boolean; tog
 
 
 // --- Bingo Game Component (Original App) ---
-const BingoGame: React.FC<{ onSwitchToAdmin: () => void; isDarkMode: boolean; toggleDarkMode: () => void; }> = ({ onSwitchToAdmin, isDarkMode, toggleDarkMode }) => {
+const BingoGame: React.FC<{ isDarkMode: boolean; toggleDarkMode: () => void; }> = ({ isDarkMode, toggleDarkMode }) => {
     const [masterJargonList, setMasterJargonList] = useState<JargonTerm[]>(getStoredJargonList);
     
     const [gridState, setGridState] = useState<GridState | null>(getInitialGridState);
@@ -254,6 +271,55 @@ const BingoGame: React.FC<{ onSwitchToAdmin: () => void; isDarkMode: boolean; to
 
     const tagInputRef = useRef<HTMLInputElement>(null);
     const [tagInput, setTagInput] = useState('');
+
+    // FLIP animation for term chips: remember where each chip was (relative to the list),
+    // then after the list changes slide chips from their old spot and pop new ones in.
+    const jargonListRef = useRef<HTMLDivElement>(null);
+    const chipPositions = useRef(new Map<string, { x: number; y: number }>());
+    const measureChips = () => {
+        const positions = new Map<string, { x: number; y: number }>();
+        const list = jargonListRef.current;
+        if (!list) return positions;
+        const listRect = list.getBoundingClientRect();
+        list.querySelectorAll<HTMLElement>('[data-term]').forEach(el => {
+            const r = el.getBoundingClientRect();
+            if (r.width === 0) return; // settings panel is closed
+            positions.set(el.dataset.term!, { x: r.left - listRect.left + list.scrollLeft, y: r.top - listRect.top + list.scrollTop });
+        });
+        return positions;
+    };
+    // Call before changing the term list so the animation starts from where chips are now.
+    const snapshotChips = () => { chipPositions.current = measureChips(); };
+    useLayoutEffect(() => {
+        const list = jargonListRef.current;
+        if (!list) return;
+        const prevPositions = chipPositions.current;
+        const nextPositions = measureChips();
+        const added: HTMLElement[] = [];
+        list.querySelectorAll<HTMLElement>('[data-term]').forEach(el => {
+            const term = el.dataset.term!;
+            const pos = nextPositions.get(term);
+            if (!pos) return;
+            const prev = prevPositions.get(term);
+            if (prev) {
+                const dx = prev.x - pos.x, dy = prev.y - pos.y;
+                if (dx || dy) {
+                    el.animate([{ transform: `translate(${dx}px, ${dy}px)` }, { transform: 'none' }], { duration: 350, easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)' });
+                }
+            } else if (prevPositions.size > 0) {
+                added.push(el);
+                el.animate([{ opacity: 0, transform: 'scale(0.6)' }, { opacity: 1, transform: 'none' }], { duration: 350, delay: 120, easing: 'cubic-bezier(0.175, 0.885, 0.32, 1.275)', fill: 'backwards' });
+            }
+        });
+        chipPositions.current = nextPositions;
+        // Bring a single newly added chip into view when the list scrolls.
+        if (added.length === 1) {
+            const pos = nextPositions.get(added[0].dataset.term!)!;
+            if (pos.y < list.scrollTop || pos.y + added[0].offsetHeight > list.scrollTop + list.clientHeight) {
+                list.scrollTo({ top: pos.y - list.clientHeight / 2, behavior: 'smooth' });
+            }
+        }
+    }, [masterJargonList]);
     
     useEffect(() => {
         setStoredJargonList(masterJargonList);
@@ -373,7 +439,7 @@ const BingoGame: React.FC<{ onSwitchToAdmin: () => void; isDarkMode: boolean; to
         setTimeout(() => {
             setShowBingoModal(false);
             setIsDismissingModal(false);
-        }, 500); // Corresponds to 'animate-modal-drop-out' duration
+        }, 450); // Matches the celebration's yank-away animation
     }, []);
 
     const handleNewGameFromModal = useCallback(() => {
@@ -384,7 +450,7 @@ const BingoGame: React.FC<{ onSwitchToAdmin: () => void; isDarkMode: boolean; to
             setShowBingoModal(false);
             resetGame();
             setIsDismissingModal(false); // Reset this last
-        }, 500); // Corresponds to 'animate-modal-drop-out' duration
+        }, 450); // Matches the celebration's yank-away animation
     }, [resetGame]);
 
     useEffect(() => {
@@ -452,11 +518,13 @@ const BingoGame: React.FC<{ onSwitchToAdmin: () => void; isDarkMode: boolean; to
     }, [grid, showBlackout, bingoWonOnCard, gridState, isDismissingModal, isResetting]);
 
     const handleDeleteTerm = (termToDelete: string) => {
+        snapshotChips();
         setMasterJargonList(prev => prev.filter(jargon => jargon.text !== termToDelete));
     };
     
     const handleAddTerm = (newTermText: string) => {
         if (newTermText && !masterJargonList.some(j => j.text.toLowerCase() === newTermText.toLowerCase())) {
+             snapshotChips();
              const randomIcon = HALLOWEEN_TERMS[Math.floor(Math.random() * HALLOWEEN_TERMS.length)];
              setMasterJargonList(prev => [...prev, { text: newTermText, icon: randomIcon }]);
              setTagInput('');
@@ -465,8 +533,24 @@ const BingoGame: React.FC<{ onSwitchToAdmin: () => void; isDarkMode: boolean; to
         }
     };
     
+    // Custom terms are anything the user typed in, rather than one of the built-in icon terms.
+    const isCustomTerm = (jargon: JargonTerm) => !HALLOWEEN_TERMS.includes(jargon.text);
+
+    // Step a custom term to the next icon, and update any cell on the current card using it.
+    const handleCycleIcon = (termText: string) => {
+        const term = masterJargonList.find(j => j.text === termText);
+        if (!term) return;
+        const nextIcon = HALLOWEEN_TERMS[(HALLOWEEN_TERMS.indexOf(term.icon) + 1) % HALLOWEEN_TERMS.length];
+        setMasterJargonList(prev => prev.map(j => j.text === termText ? { ...j, icon: nextIcon } : j));
+        setGridState(prevState => prevState ? ({
+            ...prevState,
+            grid: prevState.grid.map(row => row.map(cell => cell.text === termText ? { ...cell, icon: nextIcon } : cell)),
+        }) : null);
+    };
+
     const handleResetToDefaults = () => {
         const defaultTerms = [...HALLOWEEN_TERMS].map(term => ({ text: term, icon: term }));
+        snapshotChips();
         setMasterJargonList(defaultTerms);
     };
 
@@ -512,35 +596,8 @@ const BingoGame: React.FC<{ onSwitchToAdmin: () => void; isDarkMode: boolean; to
                 </svg>
             </div>
 
-             {showBingoModal && (
-                <div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50 flex justify-center items-center" onClick={handleCloseModal}>
-                    <div className={`relative bg-white dark:bg-black p-8 rounded-lg shadow-2xl border-4 border-current text-center flex flex-col items-center gap-4 ${isDismissingModal ? 'animate-modal-drop-out' : 'animate-modal-drop-in'}`} onClick={(e) => e.stopPropagation()}>
-                        <button onClick={handleCloseModal} className="absolute top-2 right-2 text-current hover:opacity-75">
-                             <span className="material-symbols-outlined text-3xl">close</span>
-                        </button>
-                        <svg className="w-24 h-24 text-[#4A3C6A] dark:text-[#FCF7E6]" viewBox="0 0 24 24" fill="currentColor">
-                             <path d="M12 2C6.486 2 2 6.486 2 12v4.143c0 .529.449.944.976.9 1.675-.143 2.618.635 3.024 1.243.406.608.336 1.758-.047 3.187-.064.238.111.479.357.479h11.379c.246 0 .421-.241.357-.479-.382-1.429-.453-2.579-.047-3.187.406-.608 1.349-1.386 3.024-1.243.527.044.976-.371.976-.9V12c0-5.514-4.486-10-10-10zm-3 9c-1.105 0-2-.895-2-2s.895-2 2-2 2 .895 2 2-.895 2-2 2zm6 0c-1.105 0-2-.895-2-2s.895-2 2-2 2 .895 2 2-.895 2-2 2z"/>
-                             <circle cx="9" cy="10" r="1.5" fill="white" className="dark:fill-black" />
-                             <circle cx="15" cy="10" r="1.5" fill="white" className="dark:fill-black" />
-                        </svg>
-                        <h2 className="font-pixel text-6xl md:text-7xl uppercase text-current animate-pulse">BINGO!</h2>
-                        <p className="font-pixel text-lg dark:text-gray-300">You've summoned a win!</p>
-                        <div className="flex justify-center gap-4 mt-4">
-                             <button
-                                onClick={handleNewGameFromModal}
-                                className="relative overflow-hidden bg-black text-white dark:bg-white dark:text-black font-pixel text-lg py-2 px-6 hover:opacity-90 transition-opacity"
-                            >
-                                <span className="relative z-10">New Game</span>
-                            </button>
-                             <button
-                                onClick={handleCloseModal}
-                                className="bg-gray-200 dark:bg-gray-800 font-pixel text-lg py-2 px-6 hover:opacity-90 transition-opacity"
-                            >
-                                Keep Playing
-                            </button>
-                        </div>
-                    </div>
-                </div>
+            {showBingoModal && (
+                <Celebration isDismissing={isDismissingModal} onNewGame={handleNewGameFromModal} onClose={handleCloseModal} />
             )}
 
             <div className={`fixed inset-0 bg-[#4A3C6A] bg-opacity-95 dark:bg-[#FCF7E6] dark:bg-opacity-95 z-40 flex flex-col justify-center items-center text-[#FCF7E6] dark:text-[#4A3C6A] text-center p-8 transition-opacity duration-500 overflow-hidden ${showBlackout ? 'flex' : 'hidden'} ${blackoutOpacity ? 'opacity-100' : 'opacity-0'}`}>
@@ -570,7 +627,7 @@ const BingoGame: React.FC<{ onSwitchToAdmin: () => void; isDarkMode: boolean; to
                         <p className="font-pixel text-base md:text-lg dark:text-gray-300 grey-text text-left ">nothing scarier than a bingo win</p>
                     </div>
                     <button id="dark-mode-toggle" onClick={toggleDarkMode} className="flex-shrink-0 relative flex items-center gap-2 p-1 rounded-full transition-all group hover:bg-transparent border-0" title={isDarkMode ? "Turn off dark mode" : "Turn on dark mode"}>
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 831.0055 1184.8492" className="w-10 h-10" fill="none"><g><path id="Hood" className="fill-current text-[#4A3C6A] dark:text-[#FCF7E6]" d="M831.0012,1184.8492H0v-283.7726c15.6078-7.0452,33.8768-11.6022,48.9861-19.4394,31.6518-16.4179,11.8888-32.5721,2.0949-55.1432-26.799-61.7611-2.5334-156.0111,11.3307-220.1945,22.1168-102.3891,47.1297-204.6843,70.9148-306.7542C167.8884,151.228,227.0403,49.8861,381.0222,4.7749c46.4767-13.616,91.5096,4.2277,133.7178,24.1419,113.8958,53.7372,144.8012,134.2534,178.6952,248.8906,34.5876,116.9834,60.8748,245.4045,85.32,365.2847,11.5277,56.5322,29.2336,124.5664,7.0631,180.3094-5.0991,12.8206-18.3496,29.1343-15.515,42.9737,3.2361,15.8,47.7024,25.6877,60.2081,33.6927l.4943,1.5039-.0043,283.2773Z" /><path id="Face" className="transition-colors fill-[#FCF7E6] dark:fill-[#4A3C6A] group-hover:fill-[#4A3C6A] dark:group-hover:fill-[#FCF7E6]" d="M408.8714,127.3719c53.6921-4.6757,113.6913,41.8753,147.5371,79.6223,69.0189,76.9745,104.3967,206.0727,115.3377,307.2775,1.6423,15.1916,5.3483,39.4317-.8071,53.1302-8.6138,19.1692-29.4733,15.1333-39.572,29.3569-5.6243,7.9216-8.0265,22.1695-10.2416,31.7206-8.2435,35.5436-12.5874,73.193-22.7836,108.1024-19.6543,67.2918-71.6133,116.236-90.1051,183.6395-12.5929,45.9017-7.4029,103.6013-28.0715,144.7788-27.1583,54.1066-96.7072,58.2855-129.8323,7.6238-33.8207-51.7256-22.1948-121.1712-37.6466-179.1646-5.2215-19.5973-12.8523-39.2265-21.2973-57.6309-25.762-56.1436-60.0784-84.665-72.7952-149.9971-6.2249-31.9801-5.5425-79.6091-16.7877-108.1055-8.221-20.8327-35.7593-17.596-43.4828-40.4325-4.0994-12.1208.3774-36.5123,2.189-49.8675,14.5121-106.9852,55.0984-226.8911,135.6809-301.9141,28.9998-26.9991,72.3286-54.6259,112.6782-58.1397ZM345.8879,261.2047c-22.666,3.5666-36.9147,41.9936-48.2668,59.6282-10.2589,15.9365-23.4606,29.8323-37.8956,42.0252-28.9605,24.4622-73.723,42.7852-63.1008,89.156,7.9357,34.6429,44.3304,38.6057,73.4001,29.061,39.0977-12.8374,82.6479-63.7014,99.2709-100.5292,13.7041-30.3609,37.3379-128.8996-23.4078-119.3411ZM477.7289,266.201c-33.1222,5.1296-27.344,64.296-23.4197,87.8974,10.7093,64.4065,67.61,160.6037,145.5224,139.17,47.5446-13.0795,36.2882-52.2666,9.5133-80.4391-29.9642-31.5282-55.1221-44.387-74.5978-87.2426-12.5858-27.6944-16.4843-65.6632-57.0181-59.3858ZM405.9326,471.9409c-1.4005-.8748-5.7922-.0063-7.5713.6343-10.3547,3.728-40.1955,46.5664-41.9868,57.9146-4.7789,30.2753,26.0385,24.3638,40.7336,10.773,11.6695-10.7926,11.1245-48.5998,10.0109-64.0144-.0844-1.1687-.4602-4.8538-1.1863-5.3074ZM463.6684,549.3962c3.7532-3.5865,3.8965-10.1799,3.2476-15.0662-1.5658-11.7904-28.6769-47.952-37.8396-57.0672-5.4965-5.4681-13.8657-10.2831-15.0083,1.0309-1.3873,13.7368-.8805,45.1363,5.9639,56.9779,6.675,11.5483,32.6769,24.5973,43.6364,14.1247ZM411.8612,625.9689c-25.9706.5415-51.0975,9.8326-67.1315,30.7601-41.1885,53.7589-6.4194,157.8952.4089,220.2522,5.8915,53.8017-1.2493,125.0571,24.8111,173.0204,19.0667,35.0916,58.6872,39.4135,79.2451,3.0006,16.0861-28.4922,13.2534-70.8439,16.8134-103.0838,8.5986-77.8712,45.0313-155.4992,36.9442-234.8108-5.4719-53.6637-33.8777-90.3316-91.0912-89.1386Z" /></g></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 831.0055 1184.8492" className="w-10 h-10" fill="none"><g><path id="Hood" className="fill-current text-[#4A3C6A] dark:text-[#FCF7E6]" d={GHOST_HOOD_PATH} /><path id="Face" className="transition-colors fill-[#FCF7E6] dark:fill-[#4A3C6A] group-hover:fill-[#4A3C6A] dark:group-hover:fill-[#FCF7E6]" d={GHOST_FACE_PATH} /></g></svg>
                         {isDarkMode && (<span className={`absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-[10px] font-bold leading-none transition-opacity opacity-0 group-hover:opacity-100`}>X</span>)}
                     </button>
                 </header>
@@ -582,7 +639,7 @@ const BingoGame: React.FC<{ onSwitchToAdmin: () => void; isDarkMode: boolean; to
                                 <div className="col-span-5 flex flex-col items-center justify-center p-8 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg">
                                     <p className="text-center font-pixel text-xl dark:text-white mb-4">NOT ENOUGH TERMS TO GENERATE CARD</p>
                                     <p className="text-center dark:text-gray-300 mb-2">Current term count: {masterJargonList.length} / 24 required</p>
-                                    <p className="text-center text-sm dark:text-gray-400">Please add more terms to the Cards.</p>
+                                    <p className="text-center text-sm dark:text-gray-400">Please add more terms in Settings.</p>
                                 </div>
                             ) : (
                                 grid.map((row, rowIndex) => (
@@ -598,7 +655,7 @@ const BingoGame: React.FC<{ onSwitchToAdmin: () => void; isDarkMode: boolean; to
                                         if (cardDisplayMode === 'icon') cellClasses += ' icon-only';
 
                                         return (
-                                            <div key={`${rowIndex}-${colIndex}`} onClick={() => handleCellClick(rowIndex, colIndex)} className={cellClasses}>
+                                            <div key={`${rowIndex}-${colIndex}`} onClick={() => handleCellClick(rowIndex, colIndex)} className={cellClasses} data-winning={cell.isWinningCell} data-icon={cell.icon}>
                                                 {cell.isFreeSpace ? (
                                                     <span className="text-sm sm:text-base leading-tight">{cell.text}</span>
                                                 ) : (
@@ -614,7 +671,7 @@ const BingoGame: React.FC<{ onSwitchToAdmin: () => void; isDarkMode: boolean; to
                             )}
                         </div>
                          {grid.length > 0 && (
-                            <p className="text-right mt-3 text-xs dark:text-gray-400 font-pixel">{selectedCount} / 24 SQUARES SELECTED</p>
+                            <p className="text-right mt-3 text-xs dark:text-gray-400 font-pixel">{selectedCount} / 24 SELECTED</p>
                         )}
                     </div>
 
@@ -645,11 +702,11 @@ const BingoGame: React.FC<{ onSwitchToAdmin: () => void; isDarkMode: boolean; to
                              </button>
                         </div>
 
-                        <details className="border-2 border-gray-300 p-4 dark:border-gray-700 flex-grow lg:max-h-[400px] lg:flex lg:flex-col">
+                        <details className="border-2 border-gray-300 p-4 dark:border-gray-700">
                             <summary className="flex justify-between items-center text-md font-bold cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 -m-2 p-2 rounded-t-sm">
-                                <span className="font-pixel uppercase">Cards</span>
+                                <span className="font-pixel uppercase">Settings</span>
                             </summary>
-                            <div className="mt-4 flex flex-col flex-grow overflow-hidden">
+                            <div className="mt-4 flex flex-col">
                                 <p className="mb-4 text-sm dark:text-white">...manage the terms that populate the bingo card. Changes will refresh the card.</p>
                                 <div className="flex items-center gap-3 mb-4">
                                     <label className="font-pixel text-sm uppercase whitespace-nowrap">Cards:</label>
@@ -661,13 +718,24 @@ const BingoGame: React.FC<{ onSwitchToAdmin: () => void; isDarkMode: boolean; to
                                     </div>
                                 </div>
                                 <div
-                                    className="flex flex-wrap gap-2 border-2 border-gray-300 p-2 max-h-48 lg:flex-grow overflow-y-auto dark:border-gray-700 cursor-text bg-white dark:bg-gray-900 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-black dark:focus-within:ring-white"
+                                    className="relative flex flex-wrap gap-2 border-2 border-gray-300 p-2 max-h-48 lg:max-h-none overflow-y-auto dark:border-gray-700 cursor-text bg-white dark:bg-gray-900 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-black dark:focus-within:ring-white"
                                     onClick={handleContainerClick}
+                                    ref={jargonListRef}
                                     id="jargon-list"
                                 >
-                                    {sortedJargon.map((jargon, index) => (
-                                        <div key={`${jargon.text}-${index}`} className="flex items-center gap-1 bg-gray-100 border border-gray-300 text-xs font-bold py-1 pl-2 pr-1 dark:bg-black dark:border-gray-700 dark:text-white group whitespace-nowrap">
-                                            <svg className="w-4 h-4 mr-1" fill="currentColor"><use href={`#${jargon.icon.replace(/\s/g, '')}`} /></svg>
+                                    {sortedJargon.map((jargon) => (
+                                        <div key={jargon.text} data-term={jargon.text} className="flex items-center gap-1 bg-gray-100 border border-gray-300 text-xs font-bold py-1 pl-2 pr-1 dark:bg-black dark:border-gray-700 dark:text-white group whitespace-nowrap">
+                                            {isCustomTerm(jargon) ? (
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); handleCycleIcon(jargon.text); }}
+                                                    className="mr-1 rounded-sm hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
+                                                    title="Click to change icon"
+                                                >
+                                                    <svg className="w-4 h-4" fill="currentColor"><use href={`#${jargon.icon.replace(/\s/g, '')}`} /></svg>
+                                                </button>
+                                            ) : (
+                                                <svg className="w-4 h-4 mr-1" fill="currentColor"><use href={`#${jargon.icon.replace(/\s/g, '')}`} /></svg>
+                                            )}
                                             <span className="capitalize">{jargon.text}</span>
                                             <button
                                                 onClick={(e) => { e.stopPropagation(); handleDeleteTerm(jargon.text); }}
@@ -680,18 +748,24 @@ const BingoGame: React.FC<{ onSwitchToAdmin: () => void; isDarkMode: boolean; to
                                     ))}
                                     <input ref={tagInputRef} type="text" value={tagInput} onChange={handleTagInputChange} onKeyDown={handleTagInputKeyDown} className="flex-grow min-w-[100px] outline-none bg-transparent text-sm p-1 dark:text-white placeholder-gray-400" placeholder={masterJargonList.length === 0 ? "Type term and press comma..." : "Add a term..."} />
                                 </div>
-                                <div className="mt-2 self-end flex gap-3 text-xs text-gray-500 dark:text-gray-400">
-                                    {masterJargonList.length > 0 && (<button onClick={() => { setMasterJargonList([]); }} className="hover:underline transition-colors">Clear all</button>)}
-                                    <button onClick={handleResetToDefaults} className="hover:underline transition-colors">Reset defaults</button>
-                                    <button onClick={onSwitchToAdmin} className="hover:underline transition-colors bg-transparent border-none p-0 cursor-pointer text-xs text-gray-500 dark:text-gray-400">Admin Mode</button>
+                                <div className="mt-3 flex items-center justify-between gap-3">
+                                    <Link
+                                        to="/admin"
+                                        id="admin-mode-link"
+                                        className="flex items-center gap-1.5 border-2 border-current py-1 px-3 font-pixel text-base uppercase hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
+                                    >
+                                        <span className="material-symbols-outlined text-lg leading-none">campaign</span>
+                                        <span>Show game caller</span>
+                                    </Link>
+                                    <div className="flex gap-3 text-xs text-gray-500 dark:text-gray-400">
+                                        {masterJargonList.length > 0 && (<button onClick={() => { setMasterJargonList([]); }} className="hover:underline transition-colors">Clear all</button>)}
+                                        <button onClick={handleResetToDefaults} className="hover:underline transition-colors">Reset defaults</button>
+                                    </div>
                                 </div>
                             </div>
                         </details>
                     </div>
                 </main>
-                <footer className="text-center mt-3 text-xs dark:text-gray-400">
-                    <p>Made just for fun by <a href="https://haaans.com/">Hans</a></p>
-                </footer>
             </div>
         </>
     );
@@ -699,7 +773,6 @@ const BingoGame: React.FC<{ onSwitchToAdmin: () => void; isDarkMode: boolean; to
 //test
 // --- Main App Router ---
 function App() {
-    const [view, setView] = useState<'game' | 'admin'>('game');
     const [isDarkMode, setIsDarkMode] = useState(false);
 
     useEffect(() => {
@@ -715,12 +788,16 @@ function App() {
 
     const toggleDarkMode = () => setIsDarkMode(prev => !prev);
 
-
-    if (view === 'admin') {
-        return <AdminView onSwitchToGame={() => setView('game')} isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />;
-    }
-    
-    return <BingoGame onSwitchToAdmin={() => setView('admin')} isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />;
+    return (
+        <>
+            <Routes>
+                <Route path="/" element={<BingoGame isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />} />
+                <Route path="/admin" element={<AdminView isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />} />
+            </Routes>
+            {/* Shared footer web component, loaded from haaans.com/shared/footer.js */}
+            <hans-footer text-color="var(--hw-text)"></hans-footer>
+        </>
+    );
 }
 
 export default App;

@@ -1,19 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { createHashRouter, RouterProvider } from 'react-router-dom';
+import { HashRouter } from 'react-router-dom';
 import App from './App.tsx';
-import Admin from './Admin.tsx';
-
-const router = createHashRouter([
-  {
-    path: '/',
-    element: <App />,
-  },
-  {
-    path: 'admin',
-    element: <Admin />,
-  },
-]);
 
 function mountApp() {
   const rootElement = document.getElementById('root');
@@ -24,7 +12,9 @@ function mountApp() {
   const root = ReactDOM.createRoot(rootElement);
   root.render(
     <React.StrictMode>
-      <RouterProvider router={router} />
+      <HashRouter>
+        <App />
+      </HashRouter>
     </React.StrictMode>
   );
 }
