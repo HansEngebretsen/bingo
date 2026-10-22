@@ -1,6 +1,6 @@
 # `bingo`
 
-Halloween bingo for kids and spooky movie nights: tap the monsters as they show up, and every bingo ends in a surprise.
+Halloween bingo for kids and spooky movie nights. One phone calls the game, everyone else plays on their own, with pictures for kids who can't read yet and words for kids learning to spell.
 
 
 <div align="center">
@@ -11,7 +11,7 @@ Halloween bingo for kids and spooky movie nights: tap the monsters as they show 
 
 
 <p align="center">
-<img src="screens/hero.png" alt="Spooky Bingo on a phone" width="300">
+<img src="screens/hero.gif" alt="A caller phone drawing monsters while one player marks icons and another marks words" width="100%">
 </p>
 
 ## Features
@@ -63,13 +63,6 @@ Halloween bingo for kids and spooky movie nights: tap the monsters as they show 
 <img src="screens/celebrate-ghost.gif" alt="Ghost jump scare" width="24%">
 <img src="screens/celebrate-conga.gif" alt="Monster conga line" width="24%">
 </p>
-</td>
-</tr>
-<tr valign="top">
-<td colspan="2">
-<h3>Call the game from another phone</h3>
-<p>One phone runs the caller and draws a random monster each turn, while every player marks it off on their own device. Open it from Settings → Show game caller.</p>
-<img src="screens/devices.gif" alt="A caller phone and two player phones playing together">
 </td>
 </tr>
 </table>
