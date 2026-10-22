@@ -1,6 +1,6 @@
 # `bingo`
 
-A Halloween bingo card for kids and spooky movie nights: tap the squares as things show up, and a caller screen draws the terms for you.
+Halloween bingo for kids and spooky movie nights: tap the monsters as they show up, and every bingo ends in a surprise.
 
 
 <div align="center">
@@ -11,7 +11,7 @@ A Halloween bingo card for kids and spooky movie nights: tap the squares as thin
 
 
 <p align="center">
-<img src="demos/hero.png" alt="Spooky Bingo" width="500">
+<img src="screens/hero.png" alt="Spooky Bingo on a phone" width="300">
 </p>
 
 ## Features
@@ -20,37 +20,44 @@ A Halloween bingo card for kids and spooky movie nights: tap the squares as thin
 <tr valign="top">
 <td width="50%">
 <h3>Play with icons, words, or both</h3>
-<p>Tap squares to mark them, then flip the card between pictures, words, or both. Icons work for little kids who can't read yet.</p>
+<p>Kids who can't read yet play with pictures, kids learning to spell play with words, and everyone plays the same game at the same time. Switch the card between icons, words, or both in Settings.</p>
 </td>
 <td width="50%">
-<img src="demos/modes.gif" alt="Play with icons, words, or both">
-</td>
-</tr>
-<tr valign="top">
-<td width="50%">
-<img src="demos/admin.gif" alt="Call the game in admin mode">
-</td>
-<td width="50%">
-<h3>Call the game in admin mode</h3>
-<p>Open Admin Mode from Settings and hit Next Item to draw a random term, big enough for the whole room to see.</p>
+<img src="screens/modes.gif" alt="Switching between icons, words, and both">
 </td>
 </tr>
 <tr valign="top">
 <td width="50%">
-<h3>Add your own terms</h3>
-<p>Type a term and press Enter to add it to the deck. Tap its icon to cycle through the spooky icons until one fits.</p>
+<img src="screens/shuffle.gif" alt="Shuffling a new card">
 </td>
 <td width="50%">
-<img src="demos/custom.gif" alt="Add your own terms">
+<h3>Get a different card every time</h3>
+<p>Every new game shuffles the deck into a fresh card, so no two players are hunting for the same squares in the same order.</p>
 </td>
 </tr>
 <tr valign="top">
 <td width="50%">
-<img src="demos/dark.gif" alt="Go spookier">
+<h3>Make your own cards</h3>
+<p>Type in any term to add it to the deck: a movie's catchphrases, a family in-joke, this year's costumes. Tap a custom card's icon to flip through monsters until one fits.</p>
 </td>
 <td width="50%">
-<h3>Go spookier</h3>
-<p>Tap the ghost to switch the whole card to the dark purple night mode.</p>
+<img src="screens/custom.gif" alt="Adding a custom card and picking its icon">
+</td>
+</tr>
+<tr valign="top">
+<td width="50%">
+<img src="screens/spookier.gif" alt="Touring the monsters and switching to dark mode">
+</td>
+<td width="50%">
+<h3>Turn the lights out for spookier mode</h3>
+<p>Twenty-seven hand-drawn monsters, from Frankenstein to a slightly worried eyeball. Tap the ghost and the whole card goes dark for after-sunset games.</p>
+</td>
+</tr>
+<tr valign="top">
+<td colspan="2">
+<h3>Call the game from another phone</h3>
+<p>One phone runs the caller and draws a random monster each turn, while every player marks it off on their own device. Open it from Settings → Show game caller.</p>
+<img src="screens/devices.gif" alt="A caller phone and two player phones playing together">
 </td>
 </tr>
 </table>
