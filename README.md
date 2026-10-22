@@ -55,6 +55,18 @@ Halloween bingo for kids and spooky movie nights: tap the monsters as they show 
 </tr>
 <tr valign="top">
 <td colspan="2">
+<h3>Win to a surprise</h3>
+<p>Every bingo plays one of four celebrations at random: the winning row comes alive, candy explodes everywhere, a ghost jumps out, or the monsters break into a conga line. Then a spider lowers a swinging BINGO sign.</p>
+<p align="center">
+<img src="screens/celebrate-alive.gif" alt="Winning row comes alive" width="24%">
+<img src="screens/celebrate-candy.gif" alt="Candy explosion" width="24%">
+<img src="screens/celebrate-ghost.gif" alt="Ghost jump scare" width="24%">
+<img src="screens/celebrate-conga.gif" alt="Monster conga line" width="24%">
+</p>
+</td>
+</tr>
+<tr valign="top">
+<td colspan="2">
 <h3>Call the game from another phone</h3>
 <p>One phone runs the caller and draws a random monster each turn, while every player marks it off on their own device. Open it from Settings → Show game caller.</p>
 <img src="screens/devices.gif" alt="A caller phone and two player phones playing together">
