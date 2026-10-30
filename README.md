@@ -11,7 +11,7 @@ Halloween bingo for kids and spooky movie nights. One phone calls the game, ever
 
 
 <p align="center">
-<img src="screens/hero.gif" alt="Dad calls the game on one phone while a kid who can't read marks pictures and a kid learning to read marks words" width="100%">
+<img src="screens/hero.gif" alt="Three phones: Hans calls the game (megaphone) while a kid who can't read marks pictures (picture) and a kid learning to read marks words (book)" width="100%">
 </p>
 
 ## Features
