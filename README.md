@@ -1,6 +1,6 @@
 # `bingo`
 
-Halloween bingo for kids and spooky movie nights. One phone calls the game, everyone else plays on their own, with pictures for kids who can't read yet and words for kids learning to spell.
+Themed simple game for kids learning to read. One phone calls the game, everyone else plays on their own, with pictures for kids who can't read yet and words for kids learning to spell.
 
 
 <div align="center">
