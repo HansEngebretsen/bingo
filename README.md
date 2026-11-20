@@ -1,6 +1,6 @@
 # `bingo`
 
-Themed simple game for kids learning to read. One phone calls the game, everyone else plays on their own, with pictures for kids who can't read yet and words for kids learning to spell.
+My son is learning to read, my daughter is still too young. We wanted to play some bingo with both of them, so made this.
 
 
 <div align="center">
@@ -20,7 +20,6 @@ Themed simple game for kids learning to read. One phone calls the game, everyone
 <tr valign="top">
 <td width="50%">
 <h3>Play with icons, words, or both</h3>
-<p>Kids who can't read yet play with pictures, kids learning to spell play with words, and everyone plays the same game at the same time. Switch the card between icons, words, or both in Settings.</p>
 </td>
 <td width="50%">
 <img src="screens/modes.gif" alt="Switching between icons, words, and both">
@@ -28,41 +27,19 @@ Themed simple game for kids learning to read. One phone calls the game, everyone
 </tr>
 <tr valign="top">
 <td width="50%">
-<img src="screens/shuffle.gif" alt="Shuffling a new card">
-</td>
-<td width="50%">
-<h3>Get a different card every time</h3>
-<p>Every new game shuffles the deck into a fresh card, so no two players are hunting for the same squares in the same order.</p>
-</td>
-</tr>
-<tr valign="top">
-<td width="50%">
-<h3>Make your own cards</h3>
-<p>Type in any term to add it to the deck: a movie's catchphrases, a family in-joke, this year's costumes. Tap a custom card's icon to flip through monsters until one fits.</p>
-</td>
-<td width="50%">
 <img src="screens/custom.gif" alt="Adding a custom card and picking its icon">
 </td>
+<td width="50%">
+<h3>List based bingo cards</h3>
+</td>
 </tr>
 <tr valign="top">
+<td width="50%">
+<h3>Get spooky</h3>
+<p>SVG characters, and extra spooky mode.</p>
+</td>
 <td width="50%">
 <img src="screens/spookier.gif" alt="Touring the monsters and switching to dark mode">
-</td>
-<td width="50%">
-<h3>Turn the lights out for spookier mode</h3>
-<p>Twenty-seven hand-drawn monsters, from Frankenstein to a slightly worried eyeball. Tap the ghost and the whole card goes dark for after-sunset games.</p>
-</td>
-</tr>
-<tr valign="top">
-<td colspan="2">
-<h3>Win to a surprise</h3>
-<p>Every bingo plays one of four celebrations at random: the winning row comes alive, candy explodes everywhere, a ghost jumps out, or the monsters break into a conga line. Then a spider lowers a swinging BINGO sign.</p>
-<p align="center">
-<img src="screens/celebrate-alive.gif" alt="Winning row comes alive" width="24%">
-<img src="screens/celebrate-candy.gif" alt="Candy explosion" width="24%">
-<img src="screens/celebrate-ghost.gif" alt="Ghost jump scare" width="24%">
-<img src="screens/celebrate-conga.gif" alt="Monster conga line" width="24%">
-</p>
 </td>
 </tr>
 </table>
